@@ -12,6 +12,10 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
@@ -48,8 +52,13 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
 )
 
-# Enable CMake support for ASM and C languages
-enable_language(C ASM)
+# Enable CMake support for ASM, C and C++ languages
+enable_language(C CXX ASM)
+
+# Build drone_core autonomy library
+add_subdirectory(Lib/DroneAutonomyStack/core)
+# Fix ETL include path for the submodule layout
+target_include_directories(drone_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Lib/etl/include)
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -59,6 +68,9 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    Core/Src/stm32_uart_comm_link.cpp
+    Core/Src/stm32_debug_log.cpp
+    Core/Src/stm32_core_app.cpp
 )
 
 # Link directories setup
@@ -67,8 +79,9 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+target_link_libraries(${CMAKE_PROJECT_NAME}
     # Add user defined libraries
+    drone_core
 )
 
 # Remove wrong libob.a library dependency when using cpp files

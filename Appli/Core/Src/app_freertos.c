@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32_core_app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -156,10 +156,12 @@ void MX_FREERTOS_Init(void) {
 void StartOffboardControlTask(void *argument)
 {
   /* USER CODE BEGIN OffboardControlTask */
+  core_app_init();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    core_app_tick();
+    osDelay(10); /* 100 Hz */
   }
   /* USER CODE END OffboardControlTask */
 }

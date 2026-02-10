@@ -1,0 +1,6 @@
+[submodule "Appli/Lib/DroneAutonomyStack"]
+	path = Appli/Lib/DroneAutonomyStack
+	url = https://github.com/Robetronica/DroneAutonomyStack.git
+[submodule "Appli/Lib/etl"]
+	path = Appli/Lib/etl
+	url = https://github.com/ETLCPP/etl.git

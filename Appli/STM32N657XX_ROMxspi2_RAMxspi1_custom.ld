@@ -182,16 +182,6 @@ SECTIONS
   PROVIDE( __data_source_end = __tdata_source_end );
   PROVIDE( __data_source_size = __data_source_end - __data_source );
 
-
-  .noncacheable :
-  {
-    . = ALIGN(8);
-    __snoncacheable = .;/* create symbol for start of section */
-    KEEP(*(.noncacheable))
-    . = ALIGN(8);
-    __enoncacheable = .;  /* create symbol for end of section */
-  } > RAM_NC
-
   /* Uninitialized TLS data section */
   .tbss (NOLOAD) : ALIGN(4)
   {
@@ -242,6 +232,15 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
+
+  .noncacheable :
+  {
+    . = ALIGN(8);
+    __snoncacheable = .;/* create symbol for start of section */
+    KEEP(*(.noncacheable))
+    . = ALIGN(8);
+    __enoncacheable = .;  /* create symbol for end of section */
+  } > RAM_NC
 
   psram_cacheable (NOLOAD):
   {

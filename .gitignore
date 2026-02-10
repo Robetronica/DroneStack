@@ -144,11 +144,8 @@ venv.bak/
 *.elf
 *.map
 
-# AI folder
-AIDevTeam/
+# CLAUDE
+CLAUDE.md
 
 # gitmodules
 .gitmodules
-
-# Calibration files
-calib_data/

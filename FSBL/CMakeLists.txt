@@ -111,6 +111,6 @@ add_custom_command(
 add_custom_command(
     TARGET ${CMAKE_PROJECT_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -I binary -O elf32-littlearm -B arm --change-addresses=0x70000000 ${FSBL_OUTPUT} ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-trusted.elf
+    COMMAND arm-none-eabi-objcopy -I binary -O elf32-littlearm -B arm --change-addresses=0x70000000 ${FSBL_OUTPUT} ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-trusted.elf
     COMMENT "Converting signed FSBL .bin back to .elf in address [0x70000000]"
 )

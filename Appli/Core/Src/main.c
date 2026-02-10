@@ -18,10 +18,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os2.h"
 #include "cacheaxi.h"
 #include "gpdma.h"
 #include "i2c.h"
-#include "ramcfg.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -59,6 +59,7 @@ extern DMA_HandleTypeDef handle_GPDMA1_Channel5 ;
 
 /* Private function prototypes -----------------------------------------------*/
 static void MPU_Config(void);
+void MX_FREERTOS_Init(void);
 static void SystemIsolation_Config(void);
 /* USER CODE BEGIN PFP */
 
@@ -108,12 +109,21 @@ int main(void)
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
-  MX_RAMCFG_Init();
   MX_CACHEAXI_Init();
   SystemIsolation_Config();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
+
+  /* Init scheduler */
+  osKernelInitialize();
+  /* Call init function for freertos objects (in app_freertos.c) */
+  MX_FREERTOS_Init();
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

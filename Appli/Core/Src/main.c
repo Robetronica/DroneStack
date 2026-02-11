@@ -21,7 +21,6 @@
 #include "cmsis_os2.h"
 #include "cacheaxi.h"
 #include "gpdma.h"
-#include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -106,10 +105,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_GPDMA1_Init();
-  MX_I2C1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_CACHEAXI_Init();
+  MX_UART4_Init();
   SystemIsolation_Config();
   /* USER CODE BEGIN 2 */
 
@@ -174,12 +173,12 @@ int main(void)
   {
     Error_Handler();
   }
-  /* set GPDMA1 channel 4 used by I2C1 */
+  /* set GPDMA1 channel 4 used by UART4 */
   if (HAL_DMA_ConfigChannelAttributes(&handle_GPDMA1_Channel4,DMA_CHANNEL_SEC|DMA_CHANNEL_PRIV|DMA_CHANNEL_SRC_SEC|DMA_CHANNEL_DEST_SEC)!= HAL_OK )
   {
     Error_Handler();
   }
-  /* set GPDMA1 channel 5 used by I2C1 */
+  /* set GPDMA1 channel 5 used by UART4 */
   if (HAL_DMA_ConfigChannelAttributes(&handle_GPDMA1_Channel5,DMA_CHANNEL_SEC|DMA_CHANNEL_PRIV|DMA_CHANNEL_SRC_SEC|DMA_CHANNEL_DEST_SEC)!= HAL_OK )
   {
     Error_Handler();

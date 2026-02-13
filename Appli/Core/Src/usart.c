@@ -75,7 +75,11 @@ void MX_UART4_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN UART4_Init 2 */
-
+  huart4.Init.BaudRate = 921600;
+  if (HAL_UART_Init(&huart4) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE END UART4_Init 2 */
 
 }

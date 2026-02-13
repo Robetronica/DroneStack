@@ -12,7 +12,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -63,14 +63,17 @@ target_include_directories(drone_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Lib/etl
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Inc
 )
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    Core/Src/stm32_uart_comm_link.cpp
-    Core/Src/stm32_debug_log.cpp
-    Core/Src/stm32_core_app.cpp
+    Application/Src/hal_exti_notifier.c
+    Application/Src/px4_uart_comm_link.cpp
+    Application/Src/stm32_debug_log.cpp
+    Application/Src/stm32_core_app.cpp
+    Application/Src/lidar_uart_receiver.cpp
 )
 
 # Link directories setup

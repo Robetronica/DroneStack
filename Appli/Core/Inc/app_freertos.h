@@ -57,6 +57,8 @@ extern "C" {
 extern osThreadId_t OffboardControlTaskHandle;
 extern osThreadId_t PlannerTaskHandle;
 extern osThreadId_t DebugOutputTaskHandle;
+extern osThreadId_t ispServiceTaskHandle;
+extern osMutexId_t i2c1BusMutexHandle;
 extern osMessageQueueId_t PlannedPathQueueHandle;
 
 /* Exported function prototypes -----------------------------------------------*/
@@ -67,6 +69,7 @@ extern osMessageQueueId_t PlannedPathQueueHandle;
 void StartOffboardControlTask(void *argument);
 void StartPlannerTask(void *argument);
 void StartDebugOutputTask(void *argument);
+void StartIspServiceTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 

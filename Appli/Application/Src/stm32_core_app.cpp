@@ -27,7 +27,7 @@ extern "C" void core_app_init(void)
     comm_link = new (comm_link_buf) CommLinkType();
     comm_link->startDma();
 
-    // LiDAR sensor and UART receiver (UART4)
+    // LiDAR sensor and UART receiver (USART1)
     lidar_sensor = new (lidar_sensor_buf) Lidar2D();
     lidar_receiver = new (lidar_receiver_buf) LidarUartReceiver();
     lidar_receiver->setLidar(lidar_sensor);

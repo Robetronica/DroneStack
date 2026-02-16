@@ -75,6 +75,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LCD_BL_CTRL_Pin GPIO_PIN_6
+#define LCD_BL_CTRL_GPIO_Port GPIOQ
+#define IMX335_NRST_Pin GPIO_PIN_2
+#define IMX335_NRST_GPIO_Port GPIOD
+#define LCD_ONOFF_Pin GPIO_PIN_3
+#define LCD_ONOFF_GPIO_Port GPIOQ
+#define IMX335_NRSTC8_Pin GPIO_PIN_8
+#define IMX335_NRSTC8_GPIO_Port GPIOC
+#define PWR_SD_EN_Pin GPIO_PIN_7
+#define PWR_SD_EN_GPIO_Port GPIOQ
+#define SD_SEL_Pin GPIO_PIN_5
+#define SD_SEL_GPIO_Port GPIOO
+#define SD_Detect_Pin GPIO_PIN_12
+#define SD_Detect_GPIO_Port GPION
 
 /* USER CODE BEGIN Private defines */
 

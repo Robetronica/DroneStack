@@ -182,6 +182,7 @@ standard names. */
 
 /* USER CODE BEGIN Defines */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
+#define configNUM_THREAD_LOCAL_STORAGE_POINTERS 1  /* Required by lwIP LWIP_NETCONN_SEM_PER_THREAD */
 /* USER CODE END Defines */
 
 #endif /* __FREERTOS_CONFIG_H */

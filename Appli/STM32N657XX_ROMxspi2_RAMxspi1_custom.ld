@@ -153,7 +153,8 @@ SECTIONS
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
-
+    *(.got)            /* Global Offset Table */
+    *(.got*)
     . = ALIGN(4);
 
   } >RAM AT> ROM
@@ -233,7 +234,7 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-  .noncacheable :
+  .noncacheable (NOLOAD) :
   {
     . = ALIGN(8);
     __snoncacheable = .;/* create symbol for start of section */

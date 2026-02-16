@@ -65,6 +65,18 @@ const osThreadAttr_t DebugOutputTask_attributes = {
   .priority = (osPriority_t) osPriorityLow,
   .stack_size = 2048 * 4
 };
+/* Definitions for ispServiceTask */
+osThreadId_t ispServiceTaskHandle;
+const osThreadAttr_t ispServiceTask_attributes = {
+  .name = "ispServiceTask",
+  .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 512 * 4
+};
+/* Definitions for i2c1BusMutex */
+osMutexId_t i2c1BusMutexHandle;
+const osMutexAttr_t i2c1BusMutex_attributes = {
+  .name = "i2c1BusMutex"
+};
 /* Definitions for PlannedPathQueue */
 osMessageQueueId_t PlannedPathQueueHandle;
 const osMessageQueueAttr_t PlannedPathQueue_attributes = {
@@ -110,6 +122,8 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
+  /* creation of i2c1BusMutex */
+  i2c1BusMutexHandle = osMutexNew(&i2c1BusMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -136,6 +150,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of DebugOutputTask */
   DebugOutputTaskHandle = osThreadNew(StartDebugOutputTask, NULL, &DebugOutputTask_attributes);
+
+  /* creation of ispServiceTask */
+  ispServiceTaskHandle = osThreadNew(StartIspServiceTask, NULL, &ispServiceTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -200,6 +217,24 @@ void StartDebugOutputTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END DebugOutputTask */
+}
+
+/* USER CODE BEGIN Header_StartIspServiceTask */
+/**
+* @brief Function implementing the ispServiceTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartIspServiceTask */
+void StartIspServiceTask(void *argument)
+{
+  /* USER CODE BEGIN ispServiceTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END ispServiceTask */
 }
 
 /* Private application code --------------------------------------------------*/

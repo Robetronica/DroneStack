@@ -2,7 +2,7 @@
 #include "usart.h"
 #include <cstring>
 
-extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart1;
 
 // Static DMA buffer in non-cacheable memory
 uint8_t LidarUartReceiver::dma_rx_buf_[DMA_BUF_SIZE] __attribute__((section(".noncacheable")));
@@ -25,13 +25,13 @@ void LidarUartReceiver::setLidar(Lidar2D* lidar)
 
 void LidarUartReceiver::startDma()
 {
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart4, dma_rx_buf_, DMA_BUF_SIZE);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, dma_rx_buf_, DMA_BUF_SIZE);
 }
 
 void LidarUartReceiver::onRxEvent(uint16_t size)
 {
     ring_.onRxEvent(size, dma_rx_buf_, [] {
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart4, dma_rx_buf_, DMA_BUF_SIZE);
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart1, dma_rx_buf_, DMA_BUF_SIZE);
     });
 }
 

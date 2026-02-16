@@ -39,8 +39,8 @@ extern "C" {
 /*#define HAL_CRC_MODULE_ENABLED   */
 /*#define HAL_CRYP_MODULE_ENABLED   */
 /*#define HAL_DCMI_MODULE_ENABLED   */
-/*#define HAL_DCMIPP_MODULE_ENABLED   */
-/*#define HAL_DMA2D_MODULE_ENABLED   */
+#define HAL_DCMIPP_MODULE_ENABLED
+#define HAL_DMA2D_MODULE_ENABLED
 /*#define HAL_DTS_MODULE_ENABLED   */
 /*#define HAL_ETH_MODULE_ENABLED   */
 /*#define HAL_EXTI_MODULE_ENABLED   */
@@ -49,7 +49,7 @@ extern "C" {
 /*#define HAL_GFXTIM_MODULE_ENABLED   */
 /*#define HAL_HASH_MODULE_ENABLED   */
 /*#define HAL_HCD_MODULE_ENABLED   */
-/*#define HAL_I2C_MODULE_ENABLED   */
+#define HAL_I2C_MODULE_ENABLED
 /*#define HAL_I2S_MODULE_ENABLED   */
 /*#define HAL_I3C_MODULE_ENABLED   */
 /*#define HAL_ICACHE_MODULE_ENABLED   */
@@ -57,7 +57,7 @@ extern "C" {
 /*#define HAL_IWDG_MODULE_ENABLED   */
 /*#define HAL_JPEG_MODULE_ENABLED   */
 /*#define HAL_LPTIM_MODULE_ENABLED   */
-/*#define HAL_LTDC_MODULE_ENABLED   */
+#define HAL_LTDC_MODULE_ENABLED
 /*#define HAL_MCE_MODULE_ENABLED   */
 /*#define HAL_MDF_MODULE_ENABLED   */
 /*#define HAL_MMC_MODULE_ENABLED   */
@@ -72,7 +72,7 @@ extern "C" {
 /*#define HAL_RTC_MODULE_ENABLED   */
 /*#define HAL_SAI_MODULE_ENABLED   */
 /*#define HAL_SD_MODULE_ENABLED   */
-/*#define HAL_SDIO_MODULE_ENABLED   */
+#define HAL_SDIO_MODULE_ENABLED
 /*#define HAL_SDRAM_MODULE_ENABLED   */
 /*#define HAL_SMARTCARD_MODULE_ENABLED   */
 /*#define HAL_SMBUS_MODULE_ENABLED   */

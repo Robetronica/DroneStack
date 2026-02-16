@@ -9,7 +9,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart->Instance == USART2)
         px4_comm_link_on_rx_event(Size);
-    if (huart->Instance == UART4)
+    if (huart->Instance == USART1)
         lidar_receiver_on_rx_event(Size);
 }
 

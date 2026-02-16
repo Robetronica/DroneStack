@@ -43,6 +43,38 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Include mx-generated
 include("mx-generated.cmake")
 
+# Remove lwIP subdirectory includes that shadow standard C/C++ headers.
+# CubeMX adds paths like LwIP/src/include/lwip and LwIP/src/include/compat/stdc
+# which contain errno.h that shadows picolibc's errno.h, breaking both C code
+# (missing errno macros) and C++ code (libc++'s #include_next chain for <cerrno>).
+# The parent path LwIP/src/include is sufficient — lwIP sources use
+# #include "lwip/errno.h" etc.
+# This must be re-applied after each CubeMX regeneration of mx-generated.cmake.
+get_target_property(_cubemx_incs stm32cubemx INTERFACE_INCLUDE_DIRECTORIES)
+list(FILTER _cubemx_incs EXCLUDE REGEX "LwIP/src/include/(compat|lwip)")
+set_property(TARGET stm32cubemx PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_cubemx_incs}")
+
+# Make Application/Inc visible to all targets (Connectivity needs lwipopts.h).
+target_include_directories(stm32cubemx INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Application/Inc)
+
+# Infineon middleware fixes for starm-clang:
+# - __WEAK: PAL uses it without including the CMSIS header that defines it.
+# - CY_USING_HAL: cyhal.h guards all HAL driver includes behind this define.
+#   Without it, SDIO types/enums (cyhal_sdio_cfg_t, CYHAL_SDIO_CMD_*, etc.)
+#   are never declared.
+target_compile_definitions(Connectivity PRIVATE
+    "__WEAK=__attribute__((weak))"
+    CY_USING_HAL
+    MBEDTLS_USER_CONFIG_FILE="mbedtls_user_config.h"
+)
+
+# Exclude LPA source files that require cy_secure_sockets (not available) and
+# assume dual-stack IP (u_addr union). LPA handles WiFi power-saving features
+# and is not required for basic WiFi operation.
+get_target_property(_conn_srcs Connectivity SOURCES)
+list(FILTER _conn_srcs EXCLUDE REGEX "lpa/")
+set_property(TARGET Connectivity PROPERTY SOURCES "${_conn_srcs}")
+
 
 # In order to use CMake for cross-compiling
 set(CMAKE_CXX_COMPILER_FORCED "true")

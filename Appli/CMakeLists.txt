@@ -88,9 +88,9 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 enable_language(C CXX ASM)
 
 # Build drone_core autonomy library
-add_subdirectory(Lib/DroneAutonomyStack/core)
+add_subdirectory(DroneAutonomyStack/core)
 # Fix ETL include path for the submodule layout
-target_include_directories(drone_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Lib/etl/include)
+target_include_directories(drone_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../Libraries/etl/include)
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE

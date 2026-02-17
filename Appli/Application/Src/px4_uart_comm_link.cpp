@@ -39,7 +39,7 @@ ssize_t PX4UartCommLink::receive(void* buffer, size_t len)
 void PX4UartCommLink::onRxEvent(uint16_t size)
 {
     ring_.onRxEvent(size, dma_rx_buf_, [] {
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, dma_rx_buf_, DMA_BUF_SIZE);
+        // No-op for CIRCULAR mode
     });
 }
 
@@ -52,6 +52,11 @@ void PX4UartCommLink::onTxComplete()
 extern "C" void px4_comm_link_on_rx_event(uint16_t size)
 {
     if (g_comm_link) g_comm_link->onRxEvent(size);
+}
+
+extern "C" void px4_comm_link_start_dma(void)
+{
+    if (g_comm_link) g_comm_link->startDma();
 }
 
 extern "C" void px4_comm_link_on_tx_complete(void)

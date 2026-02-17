@@ -22,15 +22,17 @@ public:
     uint32_t getScanCount() const { return scan_count_; }
     uint32_t getCrcErrors() const { return parser_.getCrcErrors(); }
     size_t getTotalRxBytes() const { return ring_.getTotalRxBytes(); }
+    size_t getBytesFed() const { return bytes_fed_; }
 
 private:
     static constexpr size_t DMA_BUF_SIZE = 2048;
-    static uint8_t dma_rx_buf_[DMA_BUF_SIZE] __attribute__((section(".noncacheable")));
+    static uint8_t dma_rx_buf_[DMA_BUF_SIZE] __attribute__((section(".noncacheable"), aligned(32)));
 
     UartDmaRingBuffer<DMA_BUF_SIZE, 3072> ring_;
     SerialPacketParser parser_;
     Lidar2D* lidar_;
     uint32_t scan_count_;
+    size_t bytes_fed_;
 
     void handlePacket(const SerialPacketParser::Packet& pkt);
     void handleLidarScan(const uint8_t* payload, uint16_t len);

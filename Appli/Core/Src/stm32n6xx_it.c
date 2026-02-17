@@ -58,8 +58,12 @@
 extern DCMIPP_HandleTypeDef hdcmipp;
 extern SDIO_HandleTypeDef hsdio2;
 extern DMA_HandleTypeDef handle_GPDMA1_Channel1;
+extern DMA_NodeTypeDef Node_GPDMA1_Channel0;
+extern DMA_QListTypeDef List_GPDMA1_Channel0;
 extern DMA_HandleTypeDef handle_GPDMA1_Channel0;
 extern DMA_HandleTypeDef handle_GPDMA1_Channel3;
+extern DMA_NodeTypeDef Node_GPDMA1_Channel2;
+extern DMA_QListTypeDef List_GPDMA1_Channel2;
 extern DMA_HandleTypeDef handle_GPDMA1_Channel2;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;

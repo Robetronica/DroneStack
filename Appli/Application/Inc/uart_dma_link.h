@@ -39,10 +39,6 @@ public:
             last_rx_pos_ = pos % DmaBufSize;
         }
 
-        if (pos >= DmaBufSize) {
-            last_rx_pos_ = 0;
-            restart();
-        }
     }
 
     /// Drain bytes from ring buffer into caller's buffer (task context).

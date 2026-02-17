@@ -21,6 +21,7 @@ public:
 
     uint32_t getScanCount() const { return scan_count_; }
     uint32_t getCrcErrors() const { return parser_.getCrcErrors(); }
+    size_t getTotalRxBytes() const { return ring_.getTotalRxBytes(); }
 
 private:
     static constexpr size_t DMA_BUF_SIZE = 2048;

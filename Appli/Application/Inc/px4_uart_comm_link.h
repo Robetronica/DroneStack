@@ -14,6 +14,8 @@ public:
     void send(const void* data, size_t len);
     ssize_t receive(void* buffer, size_t len);
 
+    size_t getTotalRxBytes() const { return ring_.getTotalRxBytes(); }
+
     // Called from HAL ISR callbacks — do not call directly
     void onRxEvent(uint16_t size);
     void onTxComplete();

@@ -35,6 +35,7 @@ public:
                 head = (head + 1) % RingBufSize;
             }
             ring_head_ = head;
+            total_rx_bytes_ += count;
             last_rx_pos_ = pos % DmaBufSize;
         }
 
@@ -66,4 +67,10 @@ private:
     volatile size_t ring_head_ = 0;
     volatile size_t ring_tail_ = 0;
     size_t last_rx_pos_ = 0;
+
+public:
+    size_t getTotalRxBytes() const { return total_rx_bytes_; }
+
+private:
+    volatile size_t total_rx_bytes_ = 0;
 };

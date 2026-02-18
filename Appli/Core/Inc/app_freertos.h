@@ -60,6 +60,7 @@ extern osThreadId_t DebugOutputTaskHandle;
 extern osThreadId_t ispServiceTaskHandle;
 extern osMutexId_t i2c1BusMutexHandle;
 extern osMessageQueueId_t PlannedPathQueueHandle;
+extern osMessageQueueId_t LcdDebugQueueHandle;
 
 /* Exported function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */

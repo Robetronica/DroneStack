@@ -62,6 +62,8 @@ void TIM6_IRQHandler(void);
 void USART1_IRQHandler(void);
 void USART2_IRQHandler(void);
 void SDMMC2_IRQHandler(void);
+void LTDC_UP_IRQHandler(void);
+void LTDC_UP_ERR_IRQHandler(void);
 void CSI_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 

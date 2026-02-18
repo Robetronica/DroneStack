@@ -110,11 +110,11 @@ int main(void)
   MX_GPDMA1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
-  MX_CACHEAXI_Init();
   MX_DMA2D_Init();
   MX_LTDC_Init();
   MX_I2C1_Init();
   MX_SDMMC2_SDIO_Init();
+  MX_CACHEAXI_Init();
   SystemIsolation_Config();
   /* USER CODE BEGIN 2 */
   

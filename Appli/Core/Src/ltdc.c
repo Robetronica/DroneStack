@@ -21,6 +21,15 @@
 #include "ltdc.h"
 
 /* USER CODE BEGIN 0 */
+#include "stm32_lcd.h"
+#include "stm32n6570_discovery_lcd.h"
+
+static void LCD_init(void);
+static uint32_t LCD_GetBppFactor(uint32_t pixel_format);
+
+__attribute__ ((section (".psram_noncacheable")))
+__attribute__ ((aligned (32)))
+uint8_t lcd_bg_buffer[800 * 480 * 4];
 
 /* USER CODE END 0 */
 
@@ -34,8 +43,8 @@ void MX_LTDC_Init(void)
 
   /* USER CODE END LTDC_Init 0 */
 
+  LTDC_LayerCfgTypeDef pLayerCfg = {0};
   LTDC_LayerCfgTypeDef pLayerCfg1 = {0};
-  LTDC_LayerFlexYUVCoPlanarTypeDef pLayerFlexYUVCoPlanar = {0};
 
   /* USER CODE BEGIN LTDC_Init 1 */
 
@@ -60,17 +69,36 @@ void MX_LTDC_Init(void)
   {
     Error_Handler();
   }
-  pLayerCfg1.WindowX0 = 160;
-  pLayerCfg1.WindowX1 = 640;
+  pLayerCfg.WindowX0 = 0;
+  pLayerCfg.WindowX1 = 800;
+  pLayerCfg.WindowY0 = 0;
+  pLayerCfg.WindowY1 = 480;
+  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg.Alpha = 255;
+  pLayerCfg.Alpha0 = 0;
+  pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+  pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+  pLayerCfg.FBStartAdress = 0;
+  pLayerCfg.ImageWidth = 800;
+  pLayerCfg.ImageHeight = 480;
+  pLayerCfg.Backcolor.Blue = 0;
+  pLayerCfg.Backcolor.Green = 0;
+  pLayerCfg.Backcolor.Red = 0;
+  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  pLayerCfg1.WindowX0 = 0;
+  pLayerCfg1.WindowX1 = 800;
   pLayerCfg1.WindowY0 = 0;
   pLayerCfg1.WindowY1 = 480;
-  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB4444;
-  pLayerCfg1.Alpha = 126;
+  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg1.Alpha = 0;
   pLayerCfg1.Alpha0 = 0;
   pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
   pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
   pLayerCfg1.FBStartAdress = 0;
-  pLayerCfg1.ImageWidth = 480;
+  pLayerCfg1.ImageWidth = 800;
   pLayerCfg1.ImageHeight = 480;
   pLayerCfg1.Backcolor.Blue = 0;
   pLayerCfg1.Backcolor.Green = 0;
@@ -79,31 +107,22 @@ void MX_LTDC_Init(void)
   {
     Error_Handler();
   }
-  pLayerFlexYUVCoPlanar.Layer.WindowX0 = 160;
-  pLayerFlexYUVCoPlanar.Layer.WindowX1 = 640;
-  pLayerFlexYUVCoPlanar.Layer.WindowY0 = 0;
-  pLayerFlexYUVCoPlanar.Layer.WindowY1 = 480;
-  pLayerFlexYUVCoPlanar.Layer.Alpha = 255;
-  pLayerFlexYUVCoPlanar.Layer.Alpha0 = 0;
-  pLayerFlexYUVCoPlanar.Layer.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
-  pLayerFlexYUVCoPlanar.Layer.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerFlexYUVCoPlanar.Layer.ImageWidth = 480;
-  pLayerFlexYUVCoPlanar.Layer.ImageHeight = 480;
-  pLayerFlexYUVCoPlanar.Layer.Backcolor.Blue = 0;
-  pLayerFlexYUVCoPlanar.Layer.Backcolor.Green = 0;
-  pLayerFlexYUVCoPlanar.Layer.Backcolor.Red = 0;
-  pLayerFlexYUVCoPlanar.FlexYUV.YUVOrder = LTDC_YUV_ORDER_LUMINANCE_FIRST;
-  pLayerFlexYUVCoPlanar.FlexYUV.LuminanceOrder = LTDC_YUV_LUMINANCE_ORDER_ODD_FIRST;
-  pLayerFlexYUVCoPlanar.FlexYUV.ChrominanceOrder = LTDC_YUV_CHROMIANCE_ORDER_U_FIRST;
-  pLayerFlexYUVCoPlanar.FlexYUV.LuminanceRescale = LTDC_YUV_LUMINANCE_RESCALE_DISABLE;
-  pLayerFlexYUVCoPlanar.YUVAddress = 0;
-  pLayerFlexYUVCoPlanar.ColorConverter = LTDC_YUV2RGBCONVERTOR_BT601_REDUCED_RANGE;
-  if (HAL_LTDC_ConfigLayerFlexYUVCoPlanar(&hltdc, &pLayerFlexYUVCoPlanar, 0) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN LTDC_Init 2 */
+  /* Enable LTDC error interrupts (FIFO underrun and transfer error) */
+  __HAL_LTDC_ENABLE_IT(&hltdc, LTDC_IT_FU | LTDC_IT_RR);
+  /* Optional: enable underrun warning to catch near-underflow conditions */
+  __HAL_LTDC_ENABLE_IT(&hltdc, LTDC_IT_FUW);
 
+  /* Ensure LTDC error IRQ lines are enabled in NVIC */
+  HAL_NVIC_SetPriority(LTDC_LO_ERR_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(LTDC_LO_ERR_IRQn);
+  HAL_NVIC_SetPriority(LTDC_UP_ERR_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(LTDC_UP_ERR_IRQn);
+
+  // Update the layers' addresses to the frame buffer address
+  HAL_LTDC_SetAddress(&hltdc, (uint32_t)lcd_bg_buffer, LTDC_LAYER_1);
+  HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_IMMEDIATE);
+  LCD_init();
   /* USER CODE END LTDC_Init 2 */
 
 }
@@ -215,8 +234,15 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* ltdcHandle)
     GPIO_InitStruct.Alternate = GPIO_AF14_LCD;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* LTDC interrupt Init */
+    HAL_NVIC_SetPriority(LTDC_UP_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(LTDC_UP_IRQn);
+    HAL_NVIC_SetPriority(LTDC_UP_ERR_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(LTDC_UP_ERR_IRQn);
   /* USER CODE BEGIN LTDC_MspInit 1 */
-
+    /* Power on the LCD panel and enable backlight */
+    HAL_GPIO_WritePin(LCD_ONOFF_GPIO_Port, LCD_ONOFF_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LCD_BL_CTRL_GPIO_Port, LCD_BL_CTRL_Pin, GPIO_PIN_SET);
   /* USER CODE END LTDC_MspInit 1 */
   }
 }
@@ -278,6 +304,9 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* ltdcHandle)
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_15|GPIO_PIN_2|GPIO_PIN_8
                           |GPIO_PIN_0);
 
+    /* LTDC interrupt Deinit */
+    HAL_NVIC_DisableIRQ(LTDC_UP_IRQn);
+    HAL_NVIC_DisableIRQ(LTDC_UP_ERR_IRQn);
   /* USER CODE BEGIN LTDC_MspDeInit 1 */
 
   /* USER CODE END LTDC_MspDeInit 1 */
@@ -285,5 +314,70 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* ltdcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void ltdc2_set_address_no_reload(uint32_t Address)
+{
+  if (HAL_LTDC_SetAddress_NoReload(&hltdc, Address, LTDC_LAYER_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
 
+void ltdc2_reload(void)
+{
+  if (HAL_LTDC_ReloadLayer(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING, LTDC_LAYER_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+static uint32_t LCD_GetBppFactor(uint32_t pixel_format)
+{
+  switch (pixel_format)
+  {
+    case LTDC_PIXEL_FORMAT_ARGB8888:
+    case LTDC_PIXEL_FORMAT_ABGR8888:
+      return 4U;
+    case LTDC_PIXEL_FORMAT_RGB888:
+      return 3U;
+    case LTDC_PIXEL_FORMAT_RGB565:
+    case LTDC_PIXEL_FORMAT_ARGB1555:
+    case LTDC_PIXEL_FORMAT_ARGB4444:
+    case LTDC_PIXEL_FORMAT_AL88:
+      return 2U;
+    case LTDC_PIXEL_FORMAT_L8:
+    case LTDC_PIXEL_FORMAT_AL44:
+      return 1U;
+    default:
+      return 4U;
+}
+}
+
+static void LCD_init(void)
+{
+
+  uint32_t *buf = (uint32_t *)lcd_bg_buffer;
+  for (uint32_t y = 0; y < 480; y++) {
+    for (uint32_t x = 0; x < 800; x++) {
+      /* Diagnostic pattern:
+       * Top-Left: RED, Top-Right: BLUE, Bottom-Left: GREEN, Bottom-Right: WHITE */
+      uint32_t color;
+      if (y < 240) {
+        color = (x < 400) ? 0xFFFF0000U : 0xFF0000FFU;
+      } else {
+        color = (x < 400) ? 0xFF00FF00U : 0xFFFFFFFFU;
+      }
+      buf[y * 800 + x] = color;
+    }
+  }
+  
+  HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING);
+  HAL_Delay(3000);
+
+  UTIL_LCD_SetFuncDriver(&LCD_Driver);
+  UTIL_LCD_SetLayer(LTDC_LAYER_1);
+  /* UTIL_LCD_Clear(0x00000000); */
+  UTIL_LCD_SetFont(&Font20);
+  UTIL_LCD_SetTextColor(UTIL_LCD_COLOR_WHITE);
+  UTIL_LCD_DisplayStringAt(20, 240, (uint8_t*)"LCD INITIALIZED", CENTER_MODE);
+}
 /* USER CODE END 1 */

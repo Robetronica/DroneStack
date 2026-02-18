@@ -24,9 +24,8 @@ static Lidar2D* lidar_sensor = nullptr;
 
 extern "C" void core_app_init(void)
 {
-    // MAVLink comm link (USART2) - DEACTIVATED for debugging
-    // comm_link = new (comm_link_buf) CommLinkType();
-    // comm_link->startDma();
+    comm_link = new (comm_link_buf) CommLinkType();
+    comm_link->startDma();
 
     // LiDAR sensor and UART receiver (USART1)
     lidar_sensor = new (lidar_sensor_buf) Lidar2D();
@@ -36,7 +35,7 @@ extern "C" void core_app_init(void)
 
     controller = new (controller_buf) ControllerType(comm_link);
     controller->setSensor(lidar_sensor);
-    // controller->start(osKernelGetTickCount());
+    controller->start(osKernelGetTickCount());
 
     LOG("\r\n=== UART Assignment ===\r\n");
     LOG("  USART1 (PE5/PE6) -> LiDAR\r\n");
@@ -59,16 +58,18 @@ extern "C" void core_app_tick(void)
         } else if ((now - uart_check_tick) >= 2000) {
             uart_first_check_done = true;
             size_t lidar_rx = lidar_receiver->getTotalRxBytes();
-            //size_t px4_rx = comm_link->getTotalRxBytes();
+            size_t px4_rx = comm_link ? comm_link->getTotalRxBytes() : 0;
 
             LOG("\r\n--- UART Status (2s) ---\r\n");
             LOG("  USART1 LiDAR : %u bytes %s\r\n",
                 (unsigned)lidar_rx, lidar_rx > 0 ? "OK" : "NO DATA");
-            // LOG("  USART2 PX4   : %u bytes %s\r\n",
-            //    (unsigned)px4_rx, px4_rx > 0 ? "OK" : "NO DATA");
+            LOG("  USART2 PX4   : %u bytes %s\r\n",
+               (unsigned)px4_rx, px4_rx > 0 ? "OK" : "NO DATA");
 
             if (lidar_rx == 0)
                 LOG("  -> No data on LiDAR UART. Check connections.\r\n");
+            if (px4_rx == 0)
+                LOG("  -> No data on PX4 UART. Check connections.\r\n");
 
             LOG("------------------------\r\n");
             lidar_diag_tick = now;
@@ -97,5 +98,5 @@ extern "C" void core_app_tick(void)
                     (unsigned)lidar_receiver->getCrcErrors());
             }
     lidar_receiver->processBytes();
-    // controller->tick(now);
+    controller->tick(now);
 }

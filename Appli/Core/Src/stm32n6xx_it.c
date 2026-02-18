@@ -56,6 +56,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern DCMIPP_HandleTypeDef hdcmipp;
+extern LTDC_HandleTypeDef hltdc;
 extern SDIO_HandleTypeDef hsdio2;
 extern DMA_HandleTypeDef handle_GPDMA1_Channel1;
 extern DMA_NodeTypeDef Node_GPDMA1_Channel0;
@@ -310,6 +311,34 @@ void SDMMC2_IRQHandler(void)
   /* USER CODE BEGIN SDMMC2_IRQn 1 */
 
   /* USER CODE END SDMMC2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles LTDC global interrupt.
+  */
+void LTDC_UP_IRQHandler(void)
+{
+  /* USER CODE BEGIN LTDC_UP_IRQn 0 */
+
+  /* USER CODE END LTDC_UP_IRQn 0 */
+  HAL_LTDC_IRQHandler(&hltdc);
+  /* USER CODE BEGIN LTDC_UP_IRQn 1 */
+
+  /* USER CODE END LTDC_UP_IRQn 1 */
+}
+
+/**
+  * @brief This function handles LTDC error interrupt.
+  */
+void LTDC_UP_ERR_IRQHandler(void)
+{
+  /* USER CODE BEGIN LTDC_UP_ERR_IRQn 0 */
+
+  /* USER CODE END LTDC_UP_ERR_IRQn 0 */
+  HAL_LTDC_IRQHandler(&hltdc);
+  /* USER CODE BEGIN LTDC_UP_ERR_IRQn 1 */
+
+  /* USER CODE END LTDC_UP_ERR_IRQn 1 */
 }
 
 /**

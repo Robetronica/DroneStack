@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32_core_app.h"
+#include "lcd_debug_output.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -82,6 +83,11 @@ osMessageQueueId_t PlannedPathQueueHandle;
 const osMessageQueueAttr_t PlannedPathQueue_attributes = {
   .name = "PlannedPathQueue"
 };
+/* Definitions for LcdDebugQueue */
+osMessageQueueId_t LcdDebugQueueHandle;
+const osMessageQueueAttr_t LcdDebugQueue_attributes = {
+  .name = "LcdDebugQueue"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -138,9 +144,11 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
   /* creation of PlannedPathQueue */
   PlannedPathQueueHandle = osMessageQueueNew (1, sizeof(uint16_t), &PlannedPathQueue_attributes);
+  /* creation of LcdDebugQueue */
+  LcdDebugQueueHandle = osMessageQueueNew (24, 128, &LcdDebugQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+
   /* USER CODE END RTOS_QUEUES */
   /* creation of OffboardControlTask */
   OffboardControlTaskHandle = osThreadNew(StartOffboardControlTask, NULL, &OffboardControlTask_attributes);
@@ -211,10 +219,13 @@ void StartPlannerTask(void *argument)
 void StartDebugOutputTask(void *argument)
 {
   /* USER CODE BEGIN DebugOutputTask */
-  /* Infinite loop */
+
+  char msg[128];
   for(;;)
   {
-    osDelay(1);
+    if (osMessageQueueGet(LcdDebugQueueHandle, msg, NULL, osWaitForever) == osOK)
+    {
+    }
   }
   /* USER CODE END DebugOutputTask */
 }

@@ -96,16 +96,24 @@ target_include_directories(drone_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../Libr
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/Fonts
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP/Components/common
 )
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    Application/Src/hal_exti_notifier.c
-    Application/Src/px4_uart_comm_link.cpp
-    Application/Src/stm32_debug_log.cpp
-    Application/Src/stm32_core_app.cpp
-    Application/Src/lidar_uart_receiver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/hal_exti_notifier.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/px4_uart_comm_link.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/stm32_debug_log.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/stm32_core_app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/lidar_uart_receiver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/lcd_debug_output.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd/stm32_lcd.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd/stm32_lcd_ex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP/stm32n6570_discovery_lcd.c
 )
 
 # Link directories setup

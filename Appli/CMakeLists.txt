@@ -110,7 +110,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/stm32_debug_log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/stm32_core_app.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/lidar_uart_receiver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/lcd_debug_output.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd/stm32_lcd.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd/stm32_lcd_ex.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP/stm32n6570_discovery_lcd.c

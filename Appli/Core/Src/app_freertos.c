@@ -23,7 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32_core_app.h"
-#include "lcd_debug_output.h"
+#include "stm32_debug_log.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -225,6 +225,7 @@ void StartDebugOutputTask(void *argument)
   {
     if (osMessageQueueGet(LcdDebugQueueHandle, msg, NULL, osWaitForever) == osOK)
     {
+      debug_log_show(msg);
     }
   }
   /* USER CODE END DebugOutputTask */

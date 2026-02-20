@@ -30,11 +30,19 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF | UART_CLEAR_NEF | UART_CLEAR_PEF | UART_CLEAR_FEF);
     huart->ErrorCode = HAL_UART_ERROR_NONE;
 
-    if (huart->Instance == USART1) {
-        LOG("[LiDAR] UART ERROR: 0x%08X\r\n", (unsigned)err);
+    const char *tag = (huart->Instance == USART1) ? "LiDAR" :
+                      (huart->Instance == USART2) ? "PX4"   : "UART?";
+
+    LOG("[%s] UART ERROR 0x%08X:%s%s%s%s%s\r\n",
+        tag, (unsigned)err,
+        (err & HAL_UART_ERROR_FE)  ? " FE(framing)"  : "",
+        (err & HAL_UART_ERROR_ORE) ? " ORE(overrun)" : "",
+        (err & HAL_UART_ERROR_NE)  ? " NE(noise)"    : "",
+        (err & HAL_UART_ERROR_PE)  ? " PE(parity)"   : "",
+        (err & HAL_UART_ERROR_DMA) ? " DMA"          : "");
+
+    if (huart->Instance == USART1)
         lidar_receiver_start_dma();
-    } else if (huart->Instance == USART2) {
-        LOG("[PX4] UART ERROR: 0x%08X\r\n", (unsigned)err);
+    else if (huart->Instance == USART2)
         px4_comm_link_start_dma();
-    }
 }

@@ -46,11 +46,20 @@ extern "C" void core_app_init(void)
 static bool uart_first_check_done = false;
 static uint32_t uart_check_tick = 0;
 static uint32_t lidar_diag_tick = 0;
+static uint32_t last_front_dist_log_tick = 0;
 
 extern "C" void core_app_tick(void)
 {
     uint32_t now = osKernelGetTickCount();
 
+    // Log front distance every 2 seconds
+    if ((now - last_front_dist_log_tick) >= 10000) {
+        last_front_dist_log_tick = now;
+        if (lidar_sensor) {
+            float dist = lidar_sensor->getDistance(0);
+            LOG("[LiDAR] Front Distance: %.2f m\r\n", dist);
+        }
+    }
     // One-time UART connectivity check at 2 seconds
     if (!uart_first_check_done) {
         if (uart_check_tick == 0) {

@@ -27,11 +27,11 @@
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef handle_GPDMA1_Channel1;
-DMA_NodeTypeDef Node_GPDMA1_Channel0;
+DMA_NodeTypeDef Node_GPDMA1_Channel0 __attribute__((section(".noncacheable")));
 DMA_QListTypeDef List_GPDMA1_Channel0;
 DMA_HandleTypeDef handle_GPDMA1_Channel0;
 DMA_HandleTypeDef handle_GPDMA1_Channel3;
-DMA_NodeTypeDef Node_GPDMA1_Channel2;
+DMA_NodeTypeDef Node_GPDMA1_Channel2 __attribute__((section(".noncacheable")));
 DMA_QListTypeDef List_GPDMA1_Channel2;
 DMA_HandleTypeDef handle_GPDMA1_Channel2;
 
@@ -155,9 +155,16 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     PE5     ------> USART1_TX
     PE6     ------> USART1_RX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_6;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -280,7 +287,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
     GPIO_InitStruct.Pin = GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
     HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);

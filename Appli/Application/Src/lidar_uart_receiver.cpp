@@ -57,10 +57,6 @@ void LidarUartReceiver::processBytes()
         static uint32_t prev_crc_errors = 0;
         for (ssize_t i = 0; i < n; i++) {
             if (parser_.feed(chunk[i]) == SerialPacketParser::Result::COMPLETE) {
-                LOG("[LiDAR] PACKET type=0x%02X len=%u at byte %u\r\n",
-                    (unsigned)parser_.getPacket().type,
-                    (unsigned)parser_.getPacket().length,
-                    (unsigned)bytes_fed_);
                 handlePacket(parser_.getPacket());
             }
             // Log first CRC error immediately

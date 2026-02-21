@@ -3,7 +3,7 @@
 #include "debug_log.h"
 #include <cstring>
 
-extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart1;
 
 // Singleton pointer for ISR routing
 static PX4UartCommLink* g_comm_link = nullptr;
@@ -18,19 +18,17 @@ PX4UartCommLink::PX4UartCommLink()
 
 void PX4UartCommLink::startDma()
 {
-    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart2, dma_rx_buf_, DMA_BUF_SIZE);
+    HAL_StatusTypeDef status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, dma_rx_buf_, RX_BUF_SIZE);
     if (status != HAL_OK) {
         LOG("[PX4] startDma FAILED: HAL status=%d gState=0x%02X RxState=0x%02X err=0x%08X\r\n",
             (int)status,
-            (unsigned)huart2.gState,
-            (unsigned)huart2.RxState,
-            (unsigned)huart2.ErrorCode);
+            (unsigned)huart1.gState,
+            (unsigned)huart1.RxState,
+            (unsigned)huart1.ErrorCode);
     } else {
         LOG("[PX4] startDma OK: gState=0x%02X RxState=0x%02X\r\n",
-    
-
-        (unsigned)huart2.gState,
-            (unsigned)huart2.RxState);
+            (unsigned)huart1.gState,
+            (unsigned)huart1.RxState);
     }
 }
 
@@ -41,7 +39,7 @@ void PX4UartCommLink::send(const void* data, size_t len)
     osSemaphoreAcquire(tx_sem_, osWaitForever);
     // Copy into non-cacheable buffer so DMA reads coherent data on Cortex-M55
     memcpy(dma_tx_buf_, data, len);
-    HAL_UART_Transmit_DMA(&huart2, dma_tx_buf_, static_cast<uint16_t>(len));
+    HAL_UART_Transmit_DMA(&huart1, dma_tx_buf_, static_cast<uint16_t>(len));
 }
 
 ssize_t PX4UartCommLink::receive(void* buffer, size_t len)
@@ -51,7 +49,7 @@ ssize_t PX4UartCommLink::receive(void* buffer, size_t len)
 
 void PX4UartCommLink::onRxEvent(uint16_t size)
 {
-    rx_callback_count_++;
+    rx_callback_count_ = rx_callback_count_ + 1;
     ring_.onRxEvent(size, dma_rx_buf_, [] {
         // No-op for CIRCULAR mode
     });

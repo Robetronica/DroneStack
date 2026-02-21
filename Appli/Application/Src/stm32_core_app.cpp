@@ -38,8 +38,8 @@ extern "C" void core_app_init(void)
     controller->start(osKernelGetTickCount());
 
     LOG("\r\n=== UART Assignment ===\r\n");
-    LOG("  USART1 (PE5/PE6) -> LiDAR\r\n");
-    LOG("  USART2 (PD5/PF6) -> PX4 MAVLink\r\n");
+    LOG("  USART1 (PE5/PE6) -> PX4 MAVLink\r\n");
+    LOG("  USART2 (PD5/PF6) -> LiDAR\r\n");
     LOG("=======================\r\n");
 }
 

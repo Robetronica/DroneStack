@@ -7,6 +7,11 @@
 #include "stm32_lcd.h"
 #include "stm32n6570_discovery_lcd.h"
 
+extern "C" void ltdc2_set_address_no_reload(uint32_t Address);
+extern "C" void ltdc2_reload(void);
+
+extern uint8_t lcd_fg_buffer[800 * 480 * 2];
+
 extern "C" void debug_log(const char* fmt, ...)
 {
     char buf[128];
@@ -37,13 +42,23 @@ extern "C" void debug_log_show(const char* msg)
     char clean_msg[128];
 
     if (!initialized) {
+        
+        /* Set address to our buffer */
+        ltdc2_set_address_no_reload((uint32_t)lcd_fg_buffer);
+        
+        /* Clear with transparency (0x0000 is transparent black in ARGB4444) */
+        memset(lcd_fg_buffer, 0, sizeof(lcd_fg_buffer));
+        UTIL_LCD_Clear(0x00000000);
+        
         UTIL_LCD_SetFont(&Font20);
         UTIL_LCD_SetTextColor(UTIL_LCD_COLOR_WHITE);
-        UTIL_LCD_SetBackColor(UTIL_LCD_COLOR_BLACK);
-        UTIL_LCD_Clear(UTIL_LCD_COLOR_BLACK);
+        UTIL_LCD_SetBackColor(0x00000000); // Transparent background for text
+        
         UTIL_LCD_DisplayStringAtLine(0, (uint8_t *)"Debug Output Task Started");
         current_line = 1;
         initialized = true;
+        ltdc2_reload();
+
     }
 
     /* Strip \r and \n */

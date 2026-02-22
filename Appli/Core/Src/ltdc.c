@@ -31,6 +31,10 @@ __attribute__ ((section (".psram_noncacheable")))
 __attribute__ ((aligned (32)))
 uint8_t lcd_bg_buffer[800 * 480 * 2];
 
+__attribute__ ((section (".psram_noncacheable")))
+__attribute__ ((aligned (32)))
+uint8_t lcd_fg_buffer[800 * 480 * 2];
+
 /* USER CODE END 0 */
 
 LTDC_HandleTypeDef hltdc;
@@ -74,7 +78,7 @@ void MX_LTDC_Init(void)
   pLayerCfg1.WindowY0 = 0;
   pLayerCfg1.WindowY1 = 480;
   pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB4444;
-  pLayerCfg1.Alpha = 0;
+  pLayerCfg1.Alpha = 126;
   pLayerCfg1.Alpha0 = 0;
   pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
   pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
@@ -379,7 +383,7 @@ static void LCD_init(void)
   Lcd_Ctx[instance].BppFactor = LCD_GetBppFactor(layer_cfg->PixelFormat);
 
   UTIL_LCD_SetFuncDriver(&LCD_Driver);
-  UTIL_LCD_SetLayer(LTDC_LAYER_1);
+  UTIL_LCD_SetLayer(LTDC_LAYER_2);
   UTIL_LCD_Clear(0x00000000);
   UTIL_LCD_SetFont(&Font20);
   UTIL_LCD_SetTextColor(UTIL_LCD_COLOR_WHITE);

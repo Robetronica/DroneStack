@@ -22,11 +22,13 @@
 #include "stm32n6xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32_debug_log.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-
+void HardFault_Handler_C(unsigned int * hardfault_args);
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -51,7 +53,55 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/**
+ * @brief  HardFault handler in C, with stack frame location as input parameter
+ *         Called from assembly HardFault_Handler
+ */
+void HardFault_Handler_C(unsigned int * hardfault_args)
+{
+  static char msg[128];
+  
+  /* Get stacked registers */
+  unsigned int stacked_r0  = ((unsigned long) hardfault_args[0]);
+  unsigned int stacked_r1  = ((unsigned long) hardfault_args[1]);
+  unsigned int stacked_r2  = ((unsigned long) hardfault_args[2]);
+  unsigned int stacked_r3  = ((unsigned long) hardfault_args[3]);
+  unsigned int stacked_r12 = ((unsigned long) hardfault_args[4]);
+  unsigned int stacked_lr  = ((unsigned long) hardfault_args[5]);
+  unsigned int stacked_pc  = ((unsigned long) hardfault_args[6]);
+  unsigned int stacked_psr = ((unsigned long) hardfault_args[7]);
 
+  /* Get Fault Status Registers */
+  unsigned int hfsr = SCB->HFSR;
+  unsigned int cfsr = SCB->CFSR;
+  unsigned int bfar = SCB->BFAR;
+  unsigned int mmfar = SCB->MMFAR;
+
+  /* Print to LCD */
+  debug_log_show("--- HARD FAULT ---");
+  
+  sprintf(msg, "PC:  0x%08X  LR: 0x%08X", stacked_pc, stacked_lr);
+  debug_log_show(msg);
+  
+  sprintf(msg, "HFSR: 0x%08X  CFSR: 0x%08X", hfsr, cfsr);
+  debug_log_show(msg);
+
+  if (cfsr & 0x00008000) { // BFARVALID
+      sprintf(msg, "BFAR: 0x%08X", bfar);
+      debug_log_show(msg);
+  }
+  
+  if (cfsr & 0x00000080) { // MMARVALID
+      sprintf(msg, "MMFAR: 0x%08X", mmfar);
+      debug_log_show(msg);
+  }
+
+  sprintf(msg, "R0: 0x%08X  R1: 0x%08X", stacked_r0, stacked_r1);
+  debug_log_show(msg);
+
+  /* Hang */
+  while (1);
+}
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -98,7 +148,16 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+  __asm volatile (
+    " tst lr, #4                                                \n"
+    " ite eq                                                    \n"
+    " mrseq r0, msp                                             \n"
+    " mrsne r0, psp                                             \n"
+    " ldr r1, [r0, #24]                                         \n"
+    " ldr r2, handler2_address_const                            \n"
+    " bx r2                                                     \n"
+    " handler2_address_const: .word HardFault_Handler_C          \n"
+  );
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {

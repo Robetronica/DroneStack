@@ -37,7 +37,7 @@
 
 /**
 	MiddleWare name : Infineon.AIROC-Wi-Fi-Bluetooth-STM32.1.8.0
-	MiddleWare fileName : ./cybsp.h
+	MiddleWare fileName : cybsp.h
 	MiddleWare version :
 */
 /*----------   -----------*/

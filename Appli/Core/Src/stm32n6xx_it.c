@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "stm32_debug_log.h"
 #include <stdio.h>
+#include "cmw_camera.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,7 +106,6 @@ void HardFault_Handler_C(unsigned int * hardfault_args)
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DCMIPP_HandleTypeDef hdcmipp;
 extern LTDC_HandleTypeDef hltdc;
 extern SDIO_HandleTypeDef hsdio2;
 extern DMA_HandleTypeDef handle_GPDMA1_Channel1;
@@ -252,9 +252,9 @@ void DebugMon_Handler(void)
 void DCMIPP_IRQHandler(void)
 {
   /* USER CODE BEGIN DCMIPP_IRQn 0 */
-
+  DCMIPP_HandleTypeDef *hcamera_dcmipp = CMW_CAMERA_GetDCMIPPHandle();
+  HAL_DCMIPP_IRQHandler(hcamera_dcmipp);
   /* USER CODE END DCMIPP_IRQn 0 */
-  HAL_DCMIPP_IRQHandler(&hdcmipp);
   /* USER CODE BEGIN DCMIPP_IRQn 1 */
 
   /* USER CODE END DCMIPP_IRQn 1 */
@@ -406,14 +406,43 @@ void LTDC_UP_ERR_IRQHandler(void)
 void CSI_IRQHandler(void)
 {
   /* USER CODE BEGIN CSI_IRQn 0 */
-
+  DCMIPP_HandleTypeDef *hcamera_dcmipp = CMW_CAMERA_GetDCMIPPHandle();
+  HAL_DCMIPP_CSI_IRQHandler(hcamera_dcmipp);
   /* USER CODE END CSI_IRQn 0 */
-  HAL_DCMIPP_CSI_IRQHandler(&hdcmipp);
   /* USER CODE BEGIN CSI_IRQn 1 */
 
   /* USER CODE END CSI_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
+/* LTDC error IRQ handlers (low and up domains share same HAL handler) */
+#include "ltdc.h"
 
+static void LTDC_RearmErrorInterrupts(void)
+{
+  uint32_t errors = hltdc.ErrorCode;
+
+  if ((errors & HAL_LTDC_ERROR_FU) != 0U)
+  {
+    __HAL_LTDC_ENABLE_IT(&hltdc, LTDC_IT_FU | LTDC_IT_FUW);
+  }
+
+  if ((errors & HAL_LTDC_ERROR_TE) != 0U)
+  {
+    __HAL_LTDC_ENABLE_IT(&hltdc, LTDC_IT_TE);
+  }
+
+  if ((errors & HAL_LTDC_ERROR_CRC) != 0U)
+  {
+    __HAL_LTDC_ENABLE_IT(&hltdc, LTDC_IT_CRC);
+  }
+
+  hltdc.ErrorCode &= ~(HAL_LTDC_ERROR_FU | HAL_LTDC_ERROR_TE | HAL_LTDC_ERROR_CRC);
+}
+
+void LTDC_LO_ERR_IRQHandler(void)
+{
+  HAL_LTDC_IRQHandler(&hltdc);
+  LTDC_RearmErrorInterrupts();
+}
 /* USER CODE END 1 */

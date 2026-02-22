@@ -100,6 +100,11 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/Fonts
     ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP
     ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP/Components/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/isp/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/evision/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/sensors
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/sensors/imx335
 )
 
 # Add sources to executable
@@ -110,9 +115,19 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/stm32_debug_log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/stm32_core_app.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/lidar_uart_receiver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Application/Src/camerapipeline.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd/stm32_lcd.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Utilities/lcd/stm32_lcd_ex.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/BSP/stm32n6570_discovery_lcd.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/isp/Src/isp_core.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/isp/Src/isp_services.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/isp/Src/isp_algo.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/cmw_camera.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/cmw_utils.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/sensors/cmw_imx335.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/sensors/imx335/imx335.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/sensors/imx335/imx335_reg.c
 )
 
 # Link directories setup
@@ -124,6 +139,8 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME}
     # Add user defined libraries
     drone_core
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/evision/Lib/libn6-evision-awb_gcc.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Middlewares/ST/Camera_Middleware/STM32_ISP_Library/evision/Lib/libn6-evision-st-ae_gcc.a
 )
 
 # Remove wrong libob.a library dependency when using cpp files

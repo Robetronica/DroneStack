@@ -144,5 +144,64 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief  Write a value in a register of the device through BUS.
+  * @param  DevAddr    Device address on Bus.
+  * @param  Reg        The target register address to write
+  * @param  pData      The target register value to be written
+  * @param  Length     data length in bytes
+  * @retval none
+  */
+int32_t I2C1_WriteReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length)
+{
+  int32_t status = 0;
+  if (HAL_I2C_Mem_Write(&hi2c1, DevAddr, Reg, I2C_MEMADD_SIZE_16BIT, pData, Length, 1000) != HAL_OK)
+  {
+    Error_Handler();
+    status = -1;
+  }
+  return status;
+}
 
+/**
+  * @brief  Read a register of the device through BUS
+  * @param  DevAddr    Device address on BUS
+  * @param  Reg        The target register address to read
+  * @param  pData      The target register value to be read
+  * @param  Length     data length in bytes
+  * @retval none
+  */
+int32_t I2C1_ReadReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length)
+{
+  int32_t status = 0;
+  if (HAL_I2C_Mem_Read(&hi2c1, DevAddr, Reg, I2C_MEMADD_SIZE_16BIT, pData, Length, 1000) != HAL_OK)
+  {
+    Error_Handler();
+    status = -1;
+  }
+  return status;
+}
+
+/**
+  * @brief  Delay function
+  * @retval Tick value
+  */
+int32_t I2C1_GetTick(void)
+{
+  uint32_t hal_ms = HAL_GetTick();
+  return (int32_t)hal_ms;
+}
+
+/* Wrappers to match IMX335 IO callback signatures */
+int32_t I2C1_BusInit(void)
+{
+  MX_I2C1_Init();
+  return 0;
+}
+
+int32_t I2C1_BusDeInit(void)
+{
+  HAL_I2C_MspDeInit(&hi2c1);
+  return 0;
+}
 /* USER CODE END 1 */

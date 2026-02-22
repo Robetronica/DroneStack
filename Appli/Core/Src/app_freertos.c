@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "stm32_core_app.h"
 #include "stm32_debug_log.h"
+#include "camerapipeline.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -241,10 +242,19 @@ void StartDebugOutputTask(void *argument)
 void StartIspServiceTask(void *argument)
 {
   /* USER CODE BEGIN ispServiceTask */
-  /* Infinite loop */
-  for(;;)
+  /* Initialize ISP helper functions and start the ISP processing */
+  osMutexAcquire(i2c1BusMutexHandle, osWaitForever);
+  CameraPipeline_Init();
+  /* Start LCD Display camera pipe stream */
+  CameraPipeline_DisplayPipe_DoubleBufferStart();
+  osMutexRelease(i2c1BusMutexHandle);
+
+  for (;;)
   {
-    osDelay(1);
+    osMutexAcquire(i2c1BusMutexHandle, osWaitForever);
+    CameraPipeline_IspUpdate();
+    osMutexRelease(i2c1BusMutexHandle);
+    osDelay(10);
   }
   /* USER CODE END ispServiceTask */
 }

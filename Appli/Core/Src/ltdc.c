@@ -29,7 +29,7 @@ static uint32_t LCD_GetBppFactor(uint32_t pixel_format);
 
 __attribute__ ((section (".psram_noncacheable")))
 __attribute__ ((aligned (32)))
-uint8_t lcd_bg_buffer[800 * 480 * 4];
+uint8_t lcd_bg_buffer[800 * 480 * 2];
 
 /* USER CODE END 0 */
 
@@ -43,8 +43,8 @@ void MX_LTDC_Init(void)
 
   /* USER CODE END LTDC_Init 0 */
 
-  LTDC_LayerCfgTypeDef pLayerCfg = {0};
   LTDC_LayerCfgTypeDef pLayerCfg1 = {0};
+  LTDC_LayerFlexYUVCoPlanarTypeDef pLayerFlexYUVCoPlanar = {0};
 
   /* USER CODE BEGIN LTDC_Init 1 */
 
@@ -69,30 +69,11 @@ void MX_LTDC_Init(void)
   {
     Error_Handler();
   }
-  pLayerCfg.WindowX0 = 0;
-  pLayerCfg.WindowX1 = 800;
-  pLayerCfg.WindowY0 = 0;
-  pLayerCfg.WindowY1 = 480;
-  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
-  pLayerCfg.Alpha = 255;
-  pLayerCfg.Alpha0 = 0;
-  pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
-  pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerCfg.FBStartAdress = 0;
-  pLayerCfg.ImageWidth = 800;
-  pLayerCfg.ImageHeight = 480;
-  pLayerCfg.Backcolor.Blue = 0;
-  pLayerCfg.Backcolor.Green = 0;
-  pLayerCfg.Backcolor.Red = 0;
-  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK)
-  {
-    Error_Handler();
-  }
   pLayerCfg1.WindowX0 = 0;
   pLayerCfg1.WindowX1 = 800;
   pLayerCfg1.WindowY0 = 0;
   pLayerCfg1.WindowY1 = 480;
-  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB4444;
   pLayerCfg1.Alpha = 0;
   pLayerCfg1.Alpha0 = 0;
   pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
@@ -104,6 +85,29 @@ void MX_LTDC_Init(void)
   pLayerCfg1.Backcolor.Green = 0;
   pLayerCfg1.Backcolor.Red = 0;
   if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg1, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  pLayerFlexYUVCoPlanar.Layer.WindowX0 = 0;
+  pLayerFlexYUVCoPlanar.Layer.WindowX1 = 800;
+  pLayerFlexYUVCoPlanar.Layer.WindowY0 = 0;
+  pLayerFlexYUVCoPlanar.Layer.WindowY1 = 480;
+  pLayerFlexYUVCoPlanar.Layer.Alpha = 255;
+  pLayerFlexYUVCoPlanar.Layer.Alpha0 = 0;
+  pLayerFlexYUVCoPlanar.Layer.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+  pLayerFlexYUVCoPlanar.Layer.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+  pLayerFlexYUVCoPlanar.Layer.ImageWidth = 800;
+  pLayerFlexYUVCoPlanar.Layer.ImageHeight = 480;
+  pLayerFlexYUVCoPlanar.Layer.Backcolor.Blue = 0;
+  pLayerFlexYUVCoPlanar.Layer.Backcolor.Green = 0;
+  pLayerFlexYUVCoPlanar.Layer.Backcolor.Red = 0;
+  pLayerFlexYUVCoPlanar.FlexYUV.YUVOrder = LTDC_YUV_ORDER_LUMINANCE_FIRST;
+  pLayerFlexYUVCoPlanar.FlexYUV.LuminanceOrder = LTDC_YUV_LUMINANCE_ORDER_ODD_FIRST;
+  pLayerFlexYUVCoPlanar.FlexYUV.ChrominanceOrder = LTDC_YUV_CHROMIANCE_ORDER_U_FIRST;
+  pLayerFlexYUVCoPlanar.FlexYUV.LuminanceRescale = LTDC_YUV_LUMINANCE_RESCALE_DISABLE;
+  pLayerFlexYUVCoPlanar.YUVAddress = 0;
+  pLayerFlexYUVCoPlanar.ColorConverter = LTDC_YUV2RGBCONVERTOR_BT601_REDUCED_RANGE;
+  if (HAL_LTDC_ConfigLayerFlexYUVCoPlanar(&hltdc, &pLayerFlexYUVCoPlanar, 0) != HAL_OK)
   {
     Error_Handler();
   }
@@ -354,30 +358,30 @@ static uint32_t LCD_GetBppFactor(uint32_t pixel_format)
 
 static void LCD_init(void)
 {
+  const uint32_t instance = 0U;
+  const LTDC_LayerCfgTypeDef *background = &hltdc.LayerCfg[LTDC_LAYER_1];
+  const LTDC_LayerCfgTypeDef *foreground = &hltdc.LayerCfg[LTDC_LAYER_2];
+  const LTDC_LayerCfgTypeDef *layer_cfg = background;
+  uint32_t active_layer = LTDC_LAYER_1;
 
-  uint32_t *buf = (uint32_t *)lcd_bg_buffer;
-  for (uint32_t y = 0; y < 480; y++) {
-    for (uint32_t x = 0; x < 800; x++) {
-      /* Diagnostic pattern:
-       * Top-Left: RED, Top-Right: BLUE, Bottom-Left: GREEN, Bottom-Right: WHITE */
-      uint32_t color;
-      if (y < 240) {
-        color = (x < 400) ? 0xFFFF0000U : 0xFF0000FFU;
-      } else {
-        color = (x < 400) ? 0xFF00FF00U : 0xFFFFFFFFU;
-      }
-      buf[y * 800 + x] = color;
-    }
+  if ((foreground->ImageWidth != 0U) && (foreground->ImageHeight != 0U))
+  {
+    layer_cfg = foreground;
+    active_layer = LTDC_LAYER_2;
   }
-  
-  HAL_LTDC_Reload(&hltdc, LTDC_RELOAD_VERTICAL_BLANKING);
-  HAL_Delay(3000);
+
+  Lcd_Ctx[instance].ReloadEnable = 1U;
+  Lcd_Ctx[instance].Brightness = 0U;
+  Lcd_Ctx[instance].ActiveLayer = active_layer;
+  Lcd_Ctx[instance].XSize = layer_cfg->ImageWidth;
+  Lcd_Ctx[instance].YSize = layer_cfg->ImageHeight;
+  Lcd_Ctx[instance].PixelFormat = layer_cfg->PixelFormat;
+  Lcd_Ctx[instance].BppFactor = LCD_GetBppFactor(layer_cfg->PixelFormat);
 
   UTIL_LCD_SetFuncDriver(&LCD_Driver);
   UTIL_LCD_SetLayer(LTDC_LAYER_1);
-  /* UTIL_LCD_Clear(0x00000000); */
+  UTIL_LCD_Clear(0x00000000);
   UTIL_LCD_SetFont(&Font20);
   UTIL_LCD_SetTextColor(UTIL_LCD_COLOR_WHITE);
-  UTIL_LCD_DisplayStringAt(20, 240, (uint8_t*)"LCD INITIALIZED", CENTER_MODE);
 }
 /* USER CODE END 1 */

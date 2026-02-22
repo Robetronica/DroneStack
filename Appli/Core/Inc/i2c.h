@@ -41,7 +41,12 @@ extern I2C_HandleTypeDef hi2c1;
 void MX_I2C1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+/* Wrappers with IMX335-compatible signatures */
+int32_t I2C1_BusInit(void);
+int32_t I2C1_BusDeInit(void);
+int32_t I2C1_WriteReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length);
+int32_t I2C1_ReadReg16(uint16_t DevAddr, uint16_t Reg, uint8_t *pData, uint16_t Length);
+int32_t I2C1_GetTick(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
